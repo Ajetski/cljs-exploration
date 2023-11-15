@@ -1,4 +1,3 @@
-## Clojure Project Template
+## Clojure(Script) + React
 
-a quickstart project to get going using cider/nrepl & babashka tasks
-
+A full-stack clojure(script) example using React (w/ scittle & Reagent) for UI and Ring (w/ Jetty) for server
