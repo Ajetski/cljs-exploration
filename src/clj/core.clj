@@ -21,7 +21,8 @@
 
 (comment
   (do
-    ; for development, eval file to restart server
+    ; for development, eval do block to restart server
     (when (resolve 'server)
       (.stop (resolve 'server)))
+    #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
     (def server (-main))))
