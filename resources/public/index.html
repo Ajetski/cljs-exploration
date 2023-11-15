@@ -1,0 +1,16 @@
+<html>
+    <script src="https://cdn.jsdelivr.net/npm/scittle@0.1.2/dist/scittle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scittle@0.1.2/dist/scittle.reagent.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="application/x-scittle" src="/assets/cljs/form.cljs"></script>
+    <script type="application/x-scittle" src="/assets/cljs/app.cljs"></script>
+    <script type="application/x-scittle">
+      (require '[reagent.dom :as rdom])
+      (rdom/render [cljs.app/app] (js/document.getElementById "app"))
+    </script>
+  </body>
+</html>
