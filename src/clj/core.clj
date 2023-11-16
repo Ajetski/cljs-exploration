@@ -8,11 +8,7 @@
 
 (def cwd (-> (java.io.File. ".") .getAbsolutePath))
 
-(def cljs-dir (io/file (str cwd "/src/cljs")))
-(def cljs-files (->> (file-seq cljs-dir)
-                     (filter #(.isFile %))
-                     (map #(.getName %))
-                     (reverse)))
+(def cljs-files ["form.cljs" "app.cljs"])
 
 (def index-html
   [:html
