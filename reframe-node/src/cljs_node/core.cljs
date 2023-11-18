@@ -5,9 +5,7 @@
    [cljs-node.events :as events]
    [cljs-node.routes :as routes]
    [cljs-node.views :as views]
-   [cljs-node.config :as config]
-   ))
-
+   [cljs-node.config :as config]))
 
 (defn dev-setup []
   (when config/debug?
