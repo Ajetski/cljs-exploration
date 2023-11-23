@@ -1,6 +1,6 @@
-## Clojure(Script) + React
+## Clojure + HTMX
 
-A full-stack clojure(script) example using React (w/ scittle & Reagent) for UI and Ring (w/ Jetty) for server
+A full-stack clojure example using HTMX for UI and Ring (w/ Jetty) for server
 
 [demo](http://ajet.lol:42000/)
 
