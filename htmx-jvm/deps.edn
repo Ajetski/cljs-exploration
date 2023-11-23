@@ -1,0 +1,15 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        ring/ring-core {:mvn/version "1.11.0-RC1"}
+        ring/ring-jetty-adapter {:mvn/version "1.7.1"}
+        compojure/compojure {:mvn/version "1.5.1"}
+        hiccup/hiccup {:mvn/version "2.0.0-RC2"}
+        cheshire/cheshire {:mvn/version "5.12.0"}}
+ :aliases
+ {:repl
+  {:extra-deps {nrepl/nrepl       {:mvn/version "0.9.0"}
+                cider/cider-nrepl {:mvn/version "0.28.4"}
+                compojure/compojure {:mvn/version "1.7.0"}}
+   :main-opts  ["-m" "nrepl.cmdline"
+                "--middleware" "[cider.nrepl/cider-middleware]"
+                "--interactive"]}}}
