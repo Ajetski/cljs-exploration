@@ -25,11 +25,17 @@
   "renders hiccup vector or function component. wraps result in root template"
   [input & args]
   (str (h/html (root-template (if (vector? input)
-                 input
-                 (apply input args))))))
+                                input
+                                (apply input args))))))
 
 (defn style [s]
   (string/join ";" (map #(str (name %) ":" ((keyword %) s)) (keys s))))
 
 (def extract-body
   (comp keywordize-keys form-decode slurp :body))
+
+(defn extract-query [req]
+  (let [query (:query-string req)]
+    (if query
+      ((comp keywordize-keys form-decode) query)
+      nil)))
