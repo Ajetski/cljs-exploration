@@ -1,33 +1,32 @@
 (ns routers.todo
   (:require
    [compojure.core :refer [context defroutes GET POST]]
-   [utils :refer [extract-body extract-query render render* style]]))
+   [db.todo]
+   [utils :refer [extract-body extract-query render render-page style]]))
 
 (def url-prefix "/todo")
 
-(defonce todos-db (atom [{:name "Get oil change"
-                          :done? false}
-                         {:name "Buy apples"
-                          :done? true}]))
+(def user-id 1)
 
 (defn todo-list
   ([req]
-   (todo-list @todos-db (:filtered (extract-query req))))
-  ([todos filtered?]
-   (->> (if filtered?
-          (filter (comp not :done?) todos)
-          todos)
-        (map-indexed
-         (fn [idx todo]
-           [:p {:style (style {:text-decoration (when (:done? todo) "line-through solid black 2px")
-                               :cursor "pointer"})
-                :hx-post (str url-prefix "/toggle/" idx)
-                :hx-target "#todos"
-                :hx-include "#filtered"}
-            (:name todo)])))))
+   (todo-list (db.todo/get-all {:user user-id})
+              (-> req extract-query :filtered)))
+  ([all-todos filtered?]
+   (map
+    (fn [todo]
+      [:p {:style (style {:text-decoration (when (= 1 (:done todo)) "line-through solid black 2px")
+                          :cursor "pointer"})
+           :hx-post (str url-prefix "/toggle/" (:id todo))
+           :hx-target "#todos"
+           :hx-include "#filtered"}
+       (:name todo)])
+    (if filtered?
+      (filter (comp not #(= 1 %) :done) all-todos)
+      all-todos))))
 
-(defn get-handler [req]
-  (let [todos @todos-db
+(defn todo-page [req]
+  (let [todos (db.todo/get-all {:user user-id})
         query (extract-query req)
         filtered? (or (= "true" (:filtered query))
                       (= "on" (:filtered query)))]
@@ -49,37 +48,28 @@
                :name "filtered"
                :checked (if filtered? "true" "false")
                :_ "on click toggle [@checked] on me
-                   then send gotime to me"
+                   then send filter to me"
                :hx-target "#todos"
                :hx-get (str url-prefix "/list")
-               :hx-trigger "gotime"}]]]))
-
-(comment
-  @todos-db
-  (get-handler {:filtered true})
-
-  ; reset db
-  (swap! todos-db (fn [_]
-                    [{:name "Get oil change"
-                      :done? false}
-                     {:name "Buy apples"
-                      :done? true}])))
+               :hx-trigger "filter"}]]]))
 
 (defn create-todo [req]
-  (let [{name :name} (extract-body req)]
-    (swap! todos-db conj {:name name, :done? false})
-    (render* todo-list @todos-db)))
+  (let [name (-> req extract-body :name)]
+    (db.todo/insert<! {:name name, :user 1})
+    (render todo-list (db.todo/get-all {:user user-id}))))
 
-(defn toggle-todo [idx req]
+(defn toggle-todo [id req]
   (let [filtered? (:filtered (extract-body req))]
-    (println filtered?)
-    (swap! todos-db update idx update :done? not)
-    (render* todo-list @todos-db filtered?)))
+    (db.todo/toggle-done-by-id! {:id id})
+    (render todo-list (db.todo/get-all {:user user-id}) filtered?)))
 
 (defroutes todo-routes
   (context url-prefix []
-    (GET "/" [] #(render get-handler %))
-    (GET "/list" [] #(render* todo-list %))
+    (GET "/" [] #(render-page todo-page %))
+    (GET "/list" [] #(render todo-list %))
     (POST "/" [] create-todo)
     (POST "/toggle/:id{[0-9]+}" [id] #(toggle-todo (Integer/parseInt id) %))))
 
+(comment
+  (todo-page {:filtered true})
+  (todo-list (db.todo/get-all {:user user-id})))

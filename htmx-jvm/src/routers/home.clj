@@ -1,7 +1,7 @@
 (ns routers.home
   (:require
    [compojure.core :refer [context defroutes GET POST]]
-   [utils :refer [extract-body render style]]))
+   [utils :refer [extract-body render-page style]]))
 
 (def get-handler
   [:div {:style (style {:border "1px solid white"
@@ -17,7 +17,7 @@
     (str "Hello, " (:name body))))
 
 (defroutes home-routes
-  (GET "/" [] (render get-handler))
+  (GET "/" [] (render-page get-handler))
   (context "/home" []
-    (GET "/" [] (render get-handler))
+    (GET "/" [] (render-page get-handler))
     (POST "/" [] post-handler)))
