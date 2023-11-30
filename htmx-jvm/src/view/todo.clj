@@ -20,8 +20,7 @@
         [:p {:style (style {:text-decoration (when done? "line-through solid black 2px")
                             :cursor "pointer"})
              :hx-post (str url-prefix "/toggle/" id)
-             :hx-target "#todos"
-             :hx-include "#filtered"}
+             :hx-target "#todos"}
          name]))
     (if filtered?
       (filter (comp not #(= 1 %) :done) all-todos)

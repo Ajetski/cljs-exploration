@@ -2,6 +2,7 @@
   (:require
    [compojure.core :refer [context defroutes DELETE GET POST]]
    [db.todo]
+   [ring.util.response :refer [redirect]]
    [utils :refer [extract-body render render-page]]
    [view.todo :refer [todo-list todo-page]]))
 
@@ -24,6 +25,7 @@
   (todo-list req))
 
 (defroutes todo-routes
+  (GET "/" [] (redirect (str url-prefix)))
   (context url-prefix []
     (GET "/" [] #(render-page todo-page %))
     (GET "/list" [] #(render todo-list %))

@@ -2,10 +2,10 @@
   (:require
    [compojure.core :refer [defroutes]]
    [compojure.route :as route]
+   [db.setup]
    [ring.adapter.jetty :refer [run-jetty]]
    [router.todo :refer [todo-routes]]
-   [utils :refer [render-page]]
-   [db.setup]))
+   [utils :refer [render-page]]))
 
 (def not-found-page
   [:h1 "Page not found"])
