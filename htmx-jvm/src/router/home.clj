@@ -1,4 +1,4 @@
-(ns routers.home
+(ns router.home
   (:require
    [compojure.core :refer [context defroutes GET POST]]
    [utils :refer [extract-body render-page style]]))

@@ -1,16 +1,17 @@
--- name: get-all
+-- name: get-all-by-user-id
 SELECT *
 FROM Todo
-WHERE user_id = :user;
+WHERE user_id = :user_id;
 
 -- name: get-by-id
 SELECT *
 FROM Todo
 WHERE id = :id;
 
--- name: get-count
+-- name: get-count-by-user-id
 SELECT COUNT(*) AS count
-FROM Todo;
+FROM Todo
+WHERE user_id = :user_id;
 
 -- name: insert<!
 INSERT INTO Todo (name, user_id) VALUES
@@ -19,15 +20,15 @@ INSERT INTO Todo (name, user_id) VALUES
 -- name: toggle-done-by-id!
 UPDATE Todo SET
 done = CASE WHEN done = 0 THEN 1 ELSE 0 END
-WHERE id = :id;
+WHERE id = :idi;
 
 -- name: delete-by-id!
 DELETE FROM Todo
-WHERE id = ?;
+WHERE id = :id;
 
--- name: delete-done-by-user!
+-- name: delete-done-by-user-id!
 DELETE FROM Todo
-WHERE user_id = :user
+WHERE user_id = :user_id 
 AND done = 1;
 
 -- name: seed!

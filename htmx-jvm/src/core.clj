@@ -3,8 +3,8 @@
    [compojure.core :refer [defroutes]]
    [compojure.route :as route]
    [ring.adapter.jetty :refer [run-jetty]]
-   [routers.home :refer [home-routes]]
-   [routers.todo :refer [todo-routes]]
+   [router.home :refer [home-routes]]
+   [router.todo :refer [todo-routes]]
    [utils :refer [render-page]]
    [db.setup]))
 

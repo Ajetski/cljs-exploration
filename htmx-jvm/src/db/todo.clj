@@ -10,9 +10,10 @@
   (require '[clojure.repl :refer [doc]])
   (db.todo/seed!)
 
-  (db.todo/get-all {:user 1})
+  (db.todo/get-all-by-user-id {:user_id 1})
+  (doc db.todo/get-all-by-user-id)
 
-  (db.todo/get-count)
+  (db.todo/get-count-by-user-id {:user_id 1})
 
   (db.todo/get-by-id {:id 2} {:result-set-fn first})
   (db.todo/get-by-id {:id 9001} {:result-set-fn first})

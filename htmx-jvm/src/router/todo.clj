@@ -1,6 +1,6 @@
-(ns routers.todo
+(ns router.todo
   (:require
-   [compojure.core :refer [context defroutes GET POST]]
+   [compojure.core :refer [context defroutes DELETE GET POST]]
    [db.todo]
    [utils :refer [extract-body extract-query render render-page style]]))
 
@@ -10,23 +10,26 @@
 
 (defn todo-list
   ([req]
-   (todo-list (db.todo/get-all {:user user-id})
+   (todo-list (db.todo/get-all-by-user-id {:user_id user-id})
               (-> req extract-query :filtered)))
   ([all-todos filtered?]
    (map
     (fn [todo]
-      [:p {:style (style {:text-decoration (when (= 1 (:done todo)) "line-through solid black 2px")
-                          :cursor "pointer"})
-           :hx-post (str url-prefix "/toggle/" (:id todo))
-           :hx-target "#todos"
-           :hx-include "#filtered"}
-       (:name todo)])
+      (let [{id :id
+             name :name} todo
+            done? (= (:done todo) 1)]
+        [:p {:style (style {:text-decoration (when done? "line-through solid black 2px")
+                            :cursor "pointer"})
+             :hx-post (str url-prefix "/toggle/" id)
+             :hx-target "#todos"
+             :hx-include "#filtered"}
+         name]))
     (if filtered?
       (filter (comp not #(= 1 %) :done) all-todos)
       all-todos))))
 
 (defn todo-page [req]
-  (let [todos (db.todo/get-all {:user user-id})
+  (let [todos (db.todo/get-all-by-user-id {:user_id user-id})
         query (extract-query req)
         filtered? (or (= "true" (:filtered query))
                       (= "on" (:filtered query)))]
@@ -41,35 +44,40 @@
       [:label {:for "name"} "Todo Name: "]
       [:input {:name "name"}]
       [:button "Add todo"]
-      [:br]
+      [:br]]
+     [:form {:hx-get (str url-prefix "/list")
+             :hx-target "#todos"}
       [:label {:for "filtered"} "Filter by incomplete"]
-      [:input {:id "filtered"
-               :type "checkbox"
+      [:input {:type "checkbox"
                :name "filtered"
                :checked (if filtered? "true" "false")
-               :_ "on click toggle [@checked] on me
-                   then send filter to me"
-               :hx-target "#todos"
-               :hx-get (str url-prefix "/list")
-               :hx-trigger "filter"}]]]))
+               :_ "on click send submit to closest <form/>"}]]
+     [:form {:hx-delete (str url-prefix "/complete")
+             :hx-target "#todos"}
+      [:button "Click to delete completed todos"]]]))
 
 (defn create-todo [req]
   (let [name (-> req extract-body :name)]
     (db.todo/insert<! {:name name, :user 1})
-    (render todo-list (db.todo/get-all {:user user-id}))))
+    (render todo-list (db.todo/get-all-by-user-id {:user_id user-id}))))
 
 (defn toggle-todo [id req]
   (let [filtered? (:filtered (extract-body req))]
     (db.todo/toggle-done-by-id! {:id id})
-    (render todo-list (db.todo/get-all {:user user-id}) filtered?)))
+    (render todo-list (db.todo/get-all-by-user-id {:user_id user-id}) filtered?)))
+
+(defn delete-done-todos! [req]
+  (db.todo/delete-done-by-user-id! {:user_id user-id})
+  (todo-list req))
 
 (defroutes todo-routes
   (context url-prefix []
     (GET "/" [] #(render-page todo-page %))
     (GET "/list" [] #(render todo-list %))
     (POST "/" [] create-todo)
-    (POST "/toggle/:id{[0-9]+}" [id] #(toggle-todo (Integer/parseInt id) %))))
+    (POST "/toggle/:id{[0-9]+}" [id] #(toggle-todo (Integer/parseInt id) %))
+    (DELETE "/complete" [] #(render delete-done-todos! %))))
 
 (comment
   (todo-page {:filtered true})
-  (todo-list (db.todo/get-all {:user user-id})))
+  (todo-list (db.todo/get-all-by-user-id {:user_id user-id})))
