@@ -20,7 +20,7 @@ INSERT INTO Todo (name, user_id) VALUES
 -- name: toggle-done-by-id!
 UPDATE Todo SET
 done = CASE WHEN done = 0 THEN 1 ELSE 0 END
-WHERE id = :idi;
+WHERE id = :id;
 
 -- name: delete-by-id!
 DELETE FROM Todo

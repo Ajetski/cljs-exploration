@@ -3,7 +3,6 @@
    [compojure.core :refer [defroutes]]
    [compojure.route :as route]
    [ring.adapter.jetty :refer [run-jetty]]
-   [router.home :refer [home-routes]]
    [router.todo :refer [todo-routes]]
    [utils :refer [render-page]]
    [db.setup]))
@@ -12,7 +11,6 @@
   [:h1 "Page not found"])
 
 (defroutes app
-  home-routes
   todo-routes
   (route/resources "/assets")
   (route/not-found (render-page not-found-page)))
